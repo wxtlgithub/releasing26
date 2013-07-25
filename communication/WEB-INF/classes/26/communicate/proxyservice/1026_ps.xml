@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Submit涉及的相关配置begin -->
+	<!-- 定时发送队列监听器 -->
+	<bean id="psTimerListener1026" class="com.lxt2.proxyservice.TimerSubmitListener">
+		<property name="module" ref="psModule1026" />
+	</bean>
+	<!-- 定时发送队列 -->
+	<bean id="psTimerQueue1026" class="com.lxt2.queuekc.CacheQueue">
+		<!-- Cache注入，使用定时Cache -->
+		<property name="cache">
+			<bean class="ihandy.lxt20.persist.cache.TsCache" destroy-method="close"/>
+		</property>
+		<!-- 队列名称 -->
+		<property name="queueName" value="mtTimer1026" />
+		<!-- 监听器 -->
+		<property name="listener" ref="psTimerListener1026" />
+	</bean>
+	<!-- API用户计数统计服务 -->
+	<bean id="psCounterService1026" class="com.lxt2.proxyservice.ClientCounterService"
+		init-method="init" destroy-method="destroy" />
+	<!-- API用户Submit流控策略 -->
+	<bean id="psThroughputStrategy1026" class="com.lxt2.proxyservice.throughput.SubmitTpStrategyDef">
+		<!-- API用户鉴权服务 -->
+		<property name="verifyService" ref="ndClientVerify" />
+		<!-- API用户计数统计 -->
+		<property name="counterService" ref="psCounterService1026" />
+	</bean>
+	<!-- Submit涉及的相关配置end -->
+
+	<!-- Report,deliver涉及的相关配置begin -->
+	<!-- RPT, MO回传队列 -->
+	<bean id="psCacheQueue1026" class="com.lxt2.queuekc.CacheQueue">
+		<!-- Cache注入 -->
+		<property name="cache">
+			<bean class="ihandy.lxt20.persist.cache.Priority" destroy-method="close"/>
+		</property>
+		<!-- 队列名称 -->
+		<property name="queueName" value="moSend1026" />
+		<!-- 监听配置 -->
+		<property name="listener" ref="psMoProcessListener1026" />
+	</bean>
+	<!-- RPT, MO回传备份队列 -->
+	<bean id="psBackQueue1026" class="com.lxt2.queuekc.TruncateCacheQueue">
+		<!-- Cache注入 -->
+		<property name="cache">
+			<bean class="ihandy.lxt20.persist.cache.TruncateQueue"
+				destroy-method="destroy">
+				<property name="path" value="${WORKDIR}../../../data/psmo1026" />
+			</bean>
+		</property>
+		<!-- 队列名称 -->
+		<property name="queueName" value="moSendBack1026" />
+	</bean>
+	<!-- RPT, MO回传控制器 -->
+	<bean id="psMoController1026" class="com.lxt2.proxyservice.MoController">
+		<!-- 滑动窗口大小 -->
+		<property name="controlWindowSize" value="10" />
+		<!-- 滑动窗口中数据的超时时间 -->
+		<property name="clearTimeOut" value="60000" />
+		<!-- 滑动窗口清理线程每次休眠时间 -->
+		<property name="clearSleepTime" value="60000" />
+		<!-- 控制器所属于的模块 -->
+		<property name="module" ref="psModule1026" />
+		<!-- MO备份队列 -->
+		<property name="queue" ref="psBackQueue1026" />
+		<!-- 计数统计服务 -->
+		<property name="countService" ref="psCountService1026" />
+	</bean>
+	<!-- MO回传过滤器 -->
+	<bean id="psDeliverFilter1026" class="com.lxt2.proxyservice.filter.SendDeliverFilter">
+		<!-- API用户Session服务 -->
+		<property name="csService" ref="psClientSessionService1026" />
+		<!-- 回传控制器 -->
+		<property name="moController" ref="psMoController1026" />
+		<!-- MO备份队列 -->
+		<property name="queue" ref="psBackQueue1026" />
+	</bean>
+	<!-- RPT回传控制器 -->
+	<bean id="psReportFilter1026" class="com.lxt2.proxyservice.filter.SendReportFilter">
+		<property name="csService" ref="psClientSessionService1026" />
+		<property name="moController" ref="psMoController1026" />
+		<!-- MO备份队列 -->
+		<property name="queue" ref="psBackQueue1026" />
+	</bean>
+	<!-- MO, RPT回传队列监听器 -->
+	<bean id="psMoProcessListener1026" class="com.lxt2.proxyservice.MoProcessListener">
+		<property name="module" ref="psModule1026" />
+		<!-- 计数统计服务 -->
+		<property name="countService" ref="psCountService1026" />
+		<!-- 用户鉴权服务 -->
+		<property name="verifyService" ref="ndClientVerify" />
+		<property name="filters">
+			<list>
+				<ref bean="psReportFilter1026" />
+				<ref bean="psDeliverFilter1026" />
+			</list>
+		</property>
+	</bean>
+	<!-- 备份队列重发线程 -->
+	<bean id="psBackupResend1026" class="com.lxt2.proxyservice.BackUpResendRunnable">
+		<property name="module" ref="psModule1026" />
+		<property name="queue" ref="psBackQueue1026" />
+		<!-- 计数统计服务 -->
+		<property name="countService" ref="psCountService1026" />
+		<!-- 用户鉴权服务 -->
+		<property name="verifyService" ref="ndClientVerify" />
+		<property name="filters">
+			<list>
+				<ref bean="psReportFilter1026" />
+				<ref bean="psDeliverFilter1026" />
+			</list>
+		</property>
+	</bean>
+	<!-- Report,deliver涉及的相关配置end -->
+</beans>
