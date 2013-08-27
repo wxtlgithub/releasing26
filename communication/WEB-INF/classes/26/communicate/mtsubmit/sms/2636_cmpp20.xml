@@ -10,6 +10,7 @@
 		<property name="nodeGatewayID" value="${nodeID}" />
 		<property name="gatewayId" ref="gatewayId2636" />
 		<property name="gatewayXmlParser" ref="gatewayXml" />
+		<property name="changePktotle" value="false"/>
 		<!-- sockt服务使用状态Connector连接，Acceptor 监听 -->
 		<property name="typeSocket">
 			<bean

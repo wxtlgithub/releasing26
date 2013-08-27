@@ -27,6 +27,7 @@
 		<property name="feeType" value="-99" />
 		<!-- 0：默认； -99不使用该配置 ； 其他配置由用户提供； -->
 		<property name="feeUserType" value="-99" />
+                <property name="changePktotle" value="false"/>
 	</bean>
 	<!-- 网关配置 -->
 	<bean id="mtsCmpp20GatewayConfig2641" class="com.lxt2.gateway.sms.GatewayConfig">

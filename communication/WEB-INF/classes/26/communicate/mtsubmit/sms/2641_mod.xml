@@ -48,7 +48,7 @@
 
 	<bean id="mtsSubmitQueue2641" class="com.lxt2.queuekc.CacheQueue" destroy-method="destroy">
 		<property name="cache">
-			<bean class="ihandy.lxt20.persist.cache.FCCache"/>
+			<bean class="ihandy.lxt20.persist.cache.Priority"/>
 		</property>
 		<property name="queueName" value="mtsSubmit2641"/>
 	</bean>
@@ -102,11 +102,7 @@
 			<map>
 				<entry key="15">
 					<!-- 普通短信拆分类 -->
-					<bean class="com.techcenter.spliter.CommSmsSpliter" parent="mtsAbstractSpliter2641">
-						<property name="smSplit">
-							<bean class="com.techcenter.spliter.SMSplit" />
-						</property>
-					</bean>
+					<bean class="com.techcenter.spliter.LongSmsNewSpliter" parent="mtsAbstractSpliter2641" />
 				</entry>
 				<entry key="31">
 					<!-- wappush拆分类 -->
@@ -114,7 +110,7 @@
 				</entry>
 				<entry key="32">
 					<!-- 长短信拆分类 -->
-					<bean class="com.techcenter.spliter.LongSmsSpliter" parent="mtsAbstractSpliter2641" />
+					<bean class="com.techcenter.spliter.LongSmsNewSpliter" parent="mtsAbstractSpliter2641" />
 				</entry>
 			</map>
 		</constructor-arg>
