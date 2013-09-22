@@ -80,7 +80,7 @@
 	      	<onMismatch>DENY</onMismatch>
 	    </filter>
  	</appender>
-	<logger name="gw56" level="info" additivity="false">
+	<logger name="gw56" level="debug" additivity="false">
 		<appender-ref ref="gwDebug" />
 		<appender-ref ref="gwInfo" />
 		<appender-ref ref="gwWarn" />

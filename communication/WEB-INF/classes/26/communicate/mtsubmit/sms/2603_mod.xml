@@ -101,11 +101,12 @@
 			<map>
 				<entry key="15">
 					<!-- 普通短信拆分类 -->
-					<bean class="com.techcenter.spliter.CommSmsSpliter"  parent="mtsAbstractSpliter2603" >
+					<!--bean class="com.techcenter.spliter.CommSmsSpliter"  parent="mtsAbstractSpliter2603">
 						<property name="smSplit">
 							<bean class="com.techcenter.spliter.SMSplit" />
 						</property>
-					</bean>
+					</bean -->
+				        <bean class="com.techcenter.spliter.LongSmsSpliter"  parent="mtsAbstractSpliter2603"/>
 				</entry>
 				<entry key="31">
 					<!-- wappush拆分类 -->
